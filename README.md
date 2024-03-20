@@ -10,7 +10,7 @@ Database scheme:
 
 Postgres database scheme: 
 
-![Alt text](./screenshots/popstgres.jpg?raw=true "Postgres")
+![Alt text](./screenshots/postgres.jpg?raw=true "Postgres")
 
 ## Usage
 
