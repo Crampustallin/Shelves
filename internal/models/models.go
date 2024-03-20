@@ -1,9 +1,10 @@
 package models
 
 type Shelve struct {
-	orderNumber string
-	productName string
-	quantity int
-	mainShelf string
-	secondaryShelf string
+	OrderNumber string
+	ProductName string
+	Quantity string 
+	ProductId string 
+	MainShelf string
+	SecondaryShelf string
 }
