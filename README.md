@@ -4,10 +4,6 @@
 
 Application to find shelves where orders' products are locate
 
-Database scheme: 
-
-![Alt text](./screenshots/diagram.png?raw=true "Diagram")
-
 Postgres database scheme: 
 
 ![Alt text](./screenshots/postgres.jpg?raw=true "Postgres")
