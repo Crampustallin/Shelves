@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"fmt"
 )
 
 type Config struct {
@@ -10,6 +11,11 @@ type Config struct {
 	DBUser string
 	DBPassword string
 	DBName string
+}
+
+func (c *Config) ConnectionString() string {
+	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", c.DBHost, c.DBPort,
+	c.DBUser, c.DBPassword, c.DBName)
 }
 
 func NewConfig() *Config {
@@ -29,3 +35,4 @@ func getEnv(key, defaultV string) string {
 	}
 	return value
 }
+
