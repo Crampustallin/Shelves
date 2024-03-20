@@ -20,7 +20,7 @@ func HandleOrdersQuery(orderNumbers []string) {
 
 	rows, err := database.QueryOrders(db, orderNumbers)
 	if err != nil {
-		log.Fatal("erro while executing query", err)
+		log.Fatal("error while executing query", err)
 		return
 	}
 	defer rows.Close()
