@@ -58,3 +58,9 @@ func QueryOrders(db DB, orderNumbers []string) (*sql.Rows, error) {
 	query += strings.Join(placeholders, ",") + ") order by main_shelf_name, product_id;"
 	return db.Query(query, interfaceSlice...) 
 }
+
+// TODO: select product_id, quantity from orders, order_summaries where orders.order_number == number and orders.id == order_summaries
+// select product_name from products where products.product_id == product ids from order_summaries
+// select shelves.id shelves.shelve_name from product_shelves, shelves where product_id == product_id and shelve_id == shelves.id 
+// retrieve subshevles
+// save all data
