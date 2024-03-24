@@ -1,10 +1,18 @@
 package models
 
-type Shelve struct {
-	OrderNumber string
-	ProductName string
+
+type Order struct {
 	Quantity int 
 	ProductId int 
-	MainShelf string
-	SecondaryShelf string
 }
+
+type Shelve struct {
+	ShelveName string
+	isMain bool
+	ProductIds []int
+}
+
+type Product struct {
+	ProductName string
+	SecondaryShelveIds []int
+}	

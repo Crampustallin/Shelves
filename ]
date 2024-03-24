@@ -42,25 +42,25 @@ func QuerySummaries(db DB, orderIds []interface{}) (*sql.Rows, error) {
 
 func QueryProducts(db DB, productIds []interface{}) (*sql.Rows, error) {
 	query := `SELECT products.id, products.product_name FROM products WHERE products.id IN (`
-	formatParamQuery(&query, productIds)
-	return db.Query(query, productIds...)
+	interFaceSlice := formatParamQuery(&query, productIds)
+	return db.Query(query, interFaceSlice...)
 }
 
-func QueryShelves(db DB, productIds []interface{}) (*sql.Rows, error) {
+func QueryShelves(db DB, productIds []int) (*sql.Rows, error) {
 	query := `SELECT ps.shelve_id, ps.product_id, ps.is_main FROM product_shelves ps
 	WHERE ps.product_id IN (`
-	formatParamQuery(&query, productIds)
-	return db.Query(query, productIds...)
+	interfaceSlice := formatParamQuery(&query, productIds)
+	return db.Query(query, interfaceSlice...)
 }
 
-func QueryShelveNames(db DB, shelvesId []interface{}) (*sql.Rows, error) {
-	query := `SELECT shelves.id, shelves.shelve_name FROM shelves 
-	WHERE shelves.id IN (`
-	formatParamQuery(&query, shelvesId)
-	return db.Query(query, shelvesId...)
+func QueryShelveNames(db DB, shelvesId []int) (*sql.Rows, error) {
+	query := `SELECT s.id, s.shelve_name FROM shelves s
+	WHERE s.id IN (`
+	interfaceSlice := formatParamQuery(&query, shelvesId)
+	return db.Query(query, interfaceSlice...)
 }
 
-func formatParamQuery[T interface{}](query *string, parameters []T) {
+func formatParamQuery[T any](query *string, parameters []T) {
 	orderLen := len(parameters)
 	placeholders := make([]string, orderLen, orderLen) 
 
