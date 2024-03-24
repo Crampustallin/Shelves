@@ -69,8 +69,3 @@ func formatParamQuery[T interface{}](query *string, parameters []T) {
 	}
 	*query += strings.Join(placeholders, ",") + ")"
 }
-
-// TODO: select product_id, quantity from orders, order_summaries where orders.order_number == number and orders.id == order_summaries
-// select product_name from products where products.product_id == product ids from order_summaries
-// select shelves.id, shelves.shelve_name, main_shelve, subshevle from product_shelves, shelves where product_shelves.product_id == product_id and product_shelve.shelve_id == shelves.id 
-// save all data
