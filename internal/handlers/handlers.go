@@ -37,7 +37,7 @@ func HandleOrdersQuery(orderNumbers []string) {
 		ordersMap[orderId] = orderNumber
 		ids = append(ids, orderId)
 	}
-	rows.Close()
+	defer rows.Close()
 
 	rows, err = database.QuerySummaries(db, ids)
 	if err != nil {
@@ -60,7 +60,6 @@ func HandleOrdersQuery(orderNumbers []string) {
 		}
 		orderInfo[productId][orderId] = models.Order{Quantity: quantity}
 	}
-	rows.Close()
 
 	ids = make([]interface{}, len(orderInfo), len(orderInfo))
 	count := 0
@@ -84,7 +83,6 @@ func HandleOrdersQuery(orderNumbers []string) {
 		}
 		productsMap[productId] = models.Product{ProductName: productName} 
 	}
-	rows.Close()
 
 	ids = make([]interface{}, len(productsMap), len(productsMap))
 	count = 0
@@ -108,21 +106,16 @@ func HandleOrdersQuery(orderNumbers []string) {
 			log.Fatal(err)
 		}
 		if isMain {
-			if val, ok := mainShelvesMap[shelveId]; ok {
-				val.ProductIds = append(val.ProductIds, productId)
-				mainShelvesMap[shelveId] = val
-			} else {
-				mainShelvesMap[shelveId] = models.Shelve{ProductIds: make([]int, 0, 1)}
-				val.ProductIds = append(val.ProductIds, productId)
-				mainShelvesMap[shelveId] = val
-			}
-		} else if val, ok := productsMap[productId]; ok {
+			val, _ := mainShelvesMap[shelveId]
+			val.ProductIds = append(val.ProductIds, productId)
+			mainShelvesMap[shelveId] = val
+		} else {
+			val, _ := productsMap[productId]
 			val.SecondaryShelveIds = append(val.SecondaryShelveIds, shelveId)
 			productsMap[productId] = val
 		}
 		shelvesMap[shelveId] = ""
 	}
-	rows.Close()
 
 	ids = make([]interface{}, len(shelvesMap), len(shelvesMap))
 	count = 0

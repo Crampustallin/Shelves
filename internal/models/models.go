@@ -8,7 +8,6 @@ type Order struct {
 
 type Shelve struct {
 	ShelveName string
-	isMain bool
 	ProductIds []int
 }
 
