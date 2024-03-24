@@ -14,7 +14,6 @@ type DB interface {
 	Query(query string, args ...any) (*sql.Rows, error)
 }
 
-
 func NewDB() (*sql.DB, error) {
 	conf := config.NewConfig()
 	connectionString := conf.ConnectionString()
@@ -25,36 +24,48 @@ func NewDB() (*sql.DB, error) {
 	return db, nil
 }
 
-func QueryOrders(db DB, orderNumbers []string) (*sql.Rows, error) {
-	query := `SELECT 
-	orders.order_number, 
-	products.product_name,
-	products.id as product_id,
-	order_summaries.quantity, 
-	main_shelf.shelve_name AS main_shelf_name, 
-	COALESCE(
-		(SELECT STRING_AGG(secondary_shelf.shelve_name, ',') 
-		FROM product_shelves 
-		JOIN shelves AS secondary_shelf ON product_shelves.shelve_id = secondary_shelf.ID 
-		WHERE product_shelves.product_id = products.ID 
-		AND product_shelves.is_main = FALSE), 
-		NULL
-	) AS secondary_shelves_names
-	FROM orders
-	JOIN order_summaries ON orders.ID = order_summaries.order_id
-	JOIN products ON order_summaries.product_id = products.ID
-	LEFT JOIN product_shelves main_ps ON products.ID = main_ps.product_id AND main_ps.is_main = TRUE
-	LEFT JOIN shelves main_shelf ON main_ps.shelve_id = main_shelf.ID
-	where orders.order_number in (`
+func QueryOrders(db DB, orderNumbers []interface{}) (*sql.Rows, error) {
+	query := `SELECT orders.id, orders.order_number FROM orders WHERE orders.order_number IN (`
+	formatParamQuery(&query, orderNumbers)
+	return db.Query(query, orderNumbers...)
+}
 
-	orderLen := len(orderNumbers)
+func QuerySummaries(db DB, orderIds []interface{}) (*sql.Rows, error) {
+	query := `SELECT os.order_id, 
+	os.product_id,
+	os.quantity
+	FROM order_summaries os 
+	WHERE os.order_id IN (`
+	formatParamQuery(&query, orderIds)
+	return db.Query(query, orderIds...)
+}
+
+func QueryProducts(db DB, productIds []interface{}) (*sql.Rows, error) {
+	query := `SELECT products.id, products.product_name FROM products WHERE products.id IN (`
+	formatParamQuery(&query, productIds)
+	return db.Query(query, productIds...)
+}
+
+func QueryShelves(db DB, productIds []interface{}) (*sql.Rows, error) {
+	query := `SELECT ps.shelve_id, ps.product_id, ps.is_main FROM product_shelves ps
+	WHERE ps.product_id IN (`
+	formatParamQuery(&query, productIds)
+	return db.Query(query, productIds...)
+}
+
+func QueryShelveNames(db DB, shelvesId []interface{}) (*sql.Rows, error) {
+	query := `SELECT shelves.id, shelves.shelve_name FROM shelves 
+	WHERE shelves.id IN (`
+	formatParamQuery(&query, shelvesId)
+	return db.Query(query, shelvesId...)
+}
+
+func formatParamQuery[T interface{}](query *string, parameters []T) {
+	orderLen := len(parameters)
 	placeholders := make([]string, orderLen, orderLen) 
-	interfaceSlice := make([]interface{}, orderLen, orderLen) 
 
 	for i := range placeholders {
 		placeholders[i] = "$" + strconv.Itoa(i+1)
-		interfaceSlice[i] = orderNumbers[i]
 	}
-	query += strings.Join(placeholders, ",") + ") order by main_shelf_name, product_id;"
-	return db.Query(query, interfaceSlice...) 
+	*query += strings.Join(placeholders, ",") + ")"
 }

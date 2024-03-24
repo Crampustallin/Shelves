@@ -7,16 +7,16 @@ import (
 )
 
 func TestConfig(t *testing.T) {
-	err := godotenv.Load("../../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		t.Fatalf("Error loading .env file")
 	}
 	want := Config {
 		DBName: "postgres",
-		DBUser: "mukhammed",
+		DBUser: "postgres",
 		DBPassword: "postgres",
 		DBPort: "5432",
-		DBHost: "localhost",
+		DBHost: "testhost",
 	}
 	conf := NewConfig()
 	if want.DBHost != conf.DBHost && want.DBPort != conf.DBPort && 
